@@ -29,17 +29,7 @@ def index():
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
-    """
-    Handles file upload form submission, executes the ML pipeline, and renders results.
-
-    Pipeline Steps:
-    1. Validate that both Resume and Job Description files exist in request.
-    2. Read text safely from uploaded .txt files.
-    3. Clean and tokenize text using NLTK preprocessing.
-    4. Compute TF-IDF Cosine Similarity and extract NLP features.
-    5. Pass features to trained Random Forest model to predict Resume Score (0-100).
-    6. Render index.html with the analyzed metrics card.
-    """
+   
     # Step 1: Check if both file input fields are present in the form request
     if "resume" not in request.files or "jd" not in request.files:
         return render_template(
