@@ -1,12 +1,4 @@
-"""
-Prediction Module for Resume Screening System.
 
-This module is responsible for:
-1. Loading the trained machine learning model (`model.pkl`) using pickle.
-2. Predicting the Resume Score (0-100) from a 6-element feature vector.
-3. Clamping (restricting) the final score between 0 and 100.
-4. Assigning a qualitative recommendation badge based on the score.
-"""
 
 import os
 import pickle
@@ -19,10 +11,7 @@ _loaded_model = None
 
 
 def load_model():
-    """
-    Loads the trained model from disk into memory.
-    Uses caching so the application doesn't reload the file from disk on every prediction.
-    """
+  
     global _loaded_model
 
     if _loaded_model is not None:
@@ -42,15 +31,7 @@ def load_model():
 
 
 def clamp_score(score: float) -> float:
-    """
-    Restricts the predicted score strictly within the 0 to 100 range.
-
-    Parameters:
-        score (float): Raw output prediction from the regression model.
-
-    Returns:
-        float: Rounded score clamped between 0.0 and 100.0.
-    """
+   
     if score < 0.0:
         return 0.0
     elif score > 100.0:
@@ -59,23 +40,7 @@ def clamp_score(score: float) -> float:
 
 
 def get_recommendation(score: float) -> dict:
-    """
-    Assigns a category badge and color theme based on the Resume Score.
-
-    ===================================================================
-    RECOMMENDATION LOGIC:
-    - Score >= 80  -> Excellent Match (Green)
-    - Score >= 60  -> Good Match      (Yellow/Info)
-    - Score >= 40  -> Average Match   (Orange/Warning)
-    - Else         -> Poor Match      (Red/Danger)
-    ===================================================================
-
-    Parameters:
-        score (float): Clamped Resume Score (0 - 100).
-
-    Returns:
-        dict: Contains the recommendation text and Bootstrap color class.
-    """
+ 
     if score >= 80.0:
         return {
             "label": "Excellent Match",
@@ -103,22 +68,7 @@ def get_recommendation(score: float) -> dict:
 
 
 def predict_resume_score(feature_vector: list) -> dict:
-    """
-    Master prediction function that takes a feature vector, runs it through the
-    trained Random Forest Regressor, and returns the final score and recommendation.
-
-    Parameters:
-        feature_vector (list): [Similarity, MatchingSkills, ResumeWordCount,
-                                Projects, Education, Experience]
-
-    Returns:
-        dict: {
-            "score": float (0-100),
-            "recommendation": str,
-            "color_class": str,
-            "hex_color": str
-        }
-    """
+   
     # Step 1: Load the trained RandomForest model
     model = load_model()
 
