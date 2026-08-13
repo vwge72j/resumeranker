@@ -1,13 +1,3 @@
-"""
-Feature Extraction Module for Resume Screening System.
-
-This module performs:
-1. TF-IDF Vectorization: Converts cleaned text strings into numerical vectors.
-2. Cosine Similarity: Calculates the mathematical similarity between Resume and Job Description.
-3. Skill Matching: Identifies overlapping technical skills from a predefined list.
-4. Keyword Detection: Checks for Education, Experience, and Project indicators.
-5. Feature Vector Construction: Builds the numerical input array required by the ML model.
-"""
 
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -39,33 +29,7 @@ PROJECT_KEYWORDS = [
 
 
 def compute_tfidf_and_similarity(resume_text: str, jd_text: str) -> tuple:
-    """
-    Converts text into numerical vectors using TF-IDF and calculates Cosine Similarity.
-
-    ====================================================================================
-    WHAT IS TF-IDF?
-    TF-IDF stands for "Term Frequency - Inverse Document Frequency".
-    - Term Frequency (TF): How often a word appears in a specific document.
-    - Inverse Document Frequency (IDF): How rare or unique that word is across all documents.
-    
-    WHY IS IT USED?
-    Simple word counts treat common words and technical terms equally. TF-IDF gives higher
-    importance to rare, specialized keywords (e.g., "MongoDB", "Algorithms") and lowers the
-    weight of generic words that appear everywhere.
-
-    HOW IT CONVERTS TEXT INTO NUMBERS:
-    1. It builds a vocabulary of all unique words present in the input texts.
-    2. Each document becomes an array (vector) of numbers where each position represents
-       a word's TF-IDF weight score.
-    ====================================================================================
-
-    Parameters:
-        resume_text (str): Cleaned resume text string.
-        jd_text (str): Cleaned job description text string.
-
-    Returns:
-        tuple: (similarity_score_float, similarity_percentage_float)
-    """
+   
     # Handle edge case where one or both texts are empty
     if not resume_text or not jd_text:
         return 0.0, 0.0
