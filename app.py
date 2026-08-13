@@ -1,13 +1,4 @@
-"""
-Main Flask Web Application for Resume Screening and Ranking System.
 
-This script:
-1. Initializes the Flask web server.
-2. Defines routes for displaying the home page ('/').
-3. Handles POST requests to '/analyze' for file upload and processing.
-4. Orchestrates text cleaning, TF-IDF feature extraction, and ML scoring.
-5. Returns results or meaningful error messages to the frontend template.
-"""
 
 import os
 from flask import Flask, render_template, request
