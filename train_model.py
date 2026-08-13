@@ -10,14 +10,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 
 def generate_synthetic_dataset(filename: str = "training.csv", num_samples: int = 400):
-    """
-    Generates a realistic beginner HR recruitment dataset with varying feature values.
     
-    The synthetic relationship creates realistic correlation:
-    - High similarity + High matching skills + Experience + Education = Score ~85-98
-    - Moderate similarity + Moderate skills + Good word count = Score ~60-80
-    - Low similarity + Low skills = Score ~15-45
-    """
     np.random.seed(42) # For reproducible results
 
     data = []
