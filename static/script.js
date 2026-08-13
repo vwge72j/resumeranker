@@ -1,11 +1,4 @@
-/**
- * Client-side Script for AI Resume Screening & Ranking System.
- *
- * This script provides:
- * 1. Client-side file extension validation (.txt only) before form submission.
- * 2. Visual feedback by changing the button text to "Analyzing..." during processing.
- * 3. Automatic smooth scrolling to the Result Card after analysis completes.
- */
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const uploadForm = document.getElementById("uploadForm");
