@@ -1,0 +1,86 @@
+/*
+ * Custom Stylesheet for AI Resume Screening & Ranking System
+ * Augments Bootstrap 5 with smooth transitions, custom cards, and typography.
+ */
+
+/* Global Body Styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333333;
+    background-color: #f8f9fa;
+    line-height: 1.6;
+}
+
+/* Navbar Branding */
+.navbar-brand {
+    letter-spacing: 0.5px;
+}
+
+/* Form Upload Containers */
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+/* Custom Card Hover & Shadow Effects */
+.card {
+    border-radius: 12px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.result-card {
+    border-radius: 12px;
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Smooth Fade-in Animation for the Result Card */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Progress Bar Customizations */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.075);
+}
+
+.progress-bar {
+    transition: width 1s ease-in-out;
+    font-size: 0.85rem;
+    line-height: 24px;
+}
+
+/* Custom Skill Badges */
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 6px;
+}
+
+/* Feature Metric Boxes */
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+/* Responsive adjust for mobile screens */
+@media (max-width: 768px) {
+    .display-3 {
+        font-size: 2.5rem;
+    }
+    .border-end-md {
+        border-right: none !important;
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+}

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Screening & Ranking System</title>
+    <!-- Bootstrap 5 CSS via CDN for clean, responsive styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons for visual badges -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-light">
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fa-solid fa-file-contract me-2 text-primary"></i>
+                Resume Screening & Ranking System
+            </a>
+            <span class="navbar-text text-light small">
+                Beginner ML & NLP Project
+            </span>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container my-5">
+        
+        <!-- Project Header Title Section -->
+        <div class="text-center mb-4">
+            <h1 class="fw-bold text-dark">Smart Resume Analyzer</h1>
+            <p class="text-muted">
+                Compare your Resume (.txt) against a Job Description (.txt) using TF-IDF & Random Forest Machine Learning.
+            </p>
+        </div>
+
+        <!-- Error Alert Banner (Displayed if validation fails in app.py) -->
+        {% if error %}
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            <strong>Error:</strong> {{ error }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endif %}
+
+        <!-- File Upload Form Card -->
+        <div class="card shadow-sm border-0 mb-5">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold">
+                    <i class="fa-solid fa-cloud-arrow-up me-2 text-primary"></i>Upload Documents
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <form action="/analyze" method="POST" enctype="multipart/form-data" id="uploadForm">
+                    <div class="row g-4">
+                        
+                        <!-- Resume Upload Column -->
+                        <div class="col-md-6">
+                            <label for="resume" class="form-label fw-semibold">
+                                1. Upload Resume (.txt only) <span class="text-danger">*</span>
+                            </label>
+                            <input class="form-control" type="file" id="resume" name="resume" accept=".txt" required>
+                            <div class="form-text">Ensure your resume is saved as a plain text file.</div>
+                        </div>
+
+                        <!-- Job Description Upload Column -->
+                        <div class="col-md-6">
+                            <label for="jd" class="form-label fw-semibold">
+                                2. Upload Job Description (.txt only) <span class="text-danger">*</span>
+                            </label>
+                            <input class="form-control" type="file" id="jd" name="jd" accept=".txt" required>
+                            <div class="form-text">Paste the job posting into a .txt file and upload here.</div>
+                        </div>
+
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold" id="analyzeBtn">
+                            <i class="fa-solid fa-magnifying-glass me-2"></i>Analyze Resume
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results Display Section (Only renders if 'result' object exists) -->
+        {% if result %}
+        <div class="card shadow border-0 result-card" id="resultSection">
+            <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fa-solid fa-chart-simple me-2"></i>AI Analysis & Match Report
+                </h5>
+                <!-- Dynamic Recommendation Badge -->
+                <span class="badge bg-{{ result.color_class }} fs-6 px-3 py-2">
+                    {{ result.recommendation }}
+                </span>
+            </div>
+
+            <div class="card-body p-4">
+                
+                <!-- Top Row: Resume Score & Progress Bar -->
+                <div class="row align-items-center mb-4 pb-4 border-bottom">
+                    <div class="col-md-4 text-center border-end-md">
+                        <h6 class="text-muted text-uppercase fw-bold mb-1">Overall Resume Score</h6>
+                        <h1 class="display-3 fw-bold text-{{ result.color_class }} mb-0">
+                            {{ result.score }}<span class="fs-4 text-muted">/100</span>
+                        </h1>
+                    </div>
+                    
+                    <div class="col-md-8 px-md-4 mt-3 mt-md-0">
+                        <label class="form-label fw-bold d-flex justify-content-between">
+                            <span>Match Quality Indicator</span>
+                            <span>{{ result.score }}%</span>
+                        </label>
+                        <!-- Dynamic Colored Progress Bar based on score -->
+          <div class="progress" style="height: 24px;">
+    <div class="progress-bar bg-{{ result.color_class }} fw-bold" 
+         id="scoreProgressBar"
+         role="progressbar" 
+         data-score="{{ result.score }}"
+         style="width: 0%;" 
+         aria-valuenow="{{ result.score }}" 
+         aria-valuemin="0" 
+         aria-valuemax="100">
+        {{ result.score }}%
+    </div>
+</div>
+             <small class="text-muted mt-1 d-block">
+                            Score calculated using TF-IDF similarity and trained Random Forest Regression.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Middle Row: 6 Key ML Feature Metrics -->
+                <h6 class="fw-bold text-muted text-uppercase mb-3">Extracted Feature Metrics</h6>
+                <div class="row g-3 mb-4">
+                    
+                    <!-- Similarity Percentage -->
+                    <div class="col-sm-6 col-md-4">
+                        <div class="p-3 border rounded bg-light h-100">
+                            <small class="text-muted d-block fw-semibold">TF-IDF Cosine Similarity</small>
+                            <span class="fs-4 fw-bold text-dark">{{ result.similarity_percentage }}%</span>
+                        </div>
+                    </div>
+
+                    <!-- Matching Skills -->
+                    <div class="col-sm-6 col-md-4">
+                        <div class="p-3 border rounded bg-light h-100">
+                            <small class="text-muted d-block fw-semibold">Matching Technical Skills</small>
+                            <span class="fs-4 fw-bold text-dark">{{ result.matching_skills_count }} / 25</span>
+                        </div>
+                    </div>
+
+                    <!-- Word Count -->
+                    <div class="col-sm-6 col-md-4">
+                        <div class="p-3 border rounded bg-light h-100">
+                            <small class="text-muted d-block fw-semibold">Resume Word Count</small>
+                            <span class="fs-4 fw-bold text-dark">{{ result.word_count }} words</span>
+                        </div>
+                    </div>
+
+                    <!-- Projects Found -->
+                    <div class="col-sm-6 col-md-4">
+                        <div class="p-3 border rounded bg-light h-100">
+                            <small class="text-muted d-block fw-semibold">Projects Mentioned</small>
+                            <span class="fs-4 fw-bold text-dark">{{ result.projects_count }} detected</span>
+                        </div>
+                    </div>
+
+                    <!-- Education Detected -->
+                    <div class="col-sm-6 col-md-4">
+                        <div class="p-3 border rounded bg-light h-100">
+                            <small class="text-muted d-block fw-semibold">Education Qualifications</small>
+                            {% if result.education_found %}
+                                <span class="badge bg-success fs-6 mt-1">Detected</span>
+                            {% else %}
+                                <span class="badge bg-secondary fs-6 mt-1">Not Found</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Experience Detected -->
+                    <div class="col-sm-6 col-md-4">
+                        <div class="p-3 border rounded bg-light h-100">
+                            <small class="text-muted d-block fw-semibold">Work Experience Keywords</small>
+                            {% if result.experience_found %}
+                                <span class="badge bg-success fs-6 mt-1">Detected</span>
+                            {% else %}
+                                <span class="badge bg-secondary fs-6 mt-1">Not Found</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Row: Overlapping Skills List -->
+                <div class="border-top pt-4">
+                    <h6 class="fw-bold text-muted text-uppercase mb-2">Overlapping Skills Found:</h6>
+                    {% if result.matched_skills_list %}
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            {% for skill in result.matched_skills_list %}
+                            <span class="badge bg-primary px-3 py-2 fs-6">{{ skill | title }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No predefined technical skills matched between the documents.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Client-Side Script -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
