@@ -1,14 +1,4 @@
-"""
-Machine Learning Training Script for Resume Screening System.
 
-This script:
-1. Generates a synthetic dataset of 400 realistic Resume-Job Description comparison samples.
-2. Saves the dataset to 'training.csv'.
-3. Splits the dataset into Training (80%) and Testing (20%) sets.
-4. Trains a RandomForestRegressor model on 6 beginner-level features.
-5. Evaluates the model using MAE, RMSE, and R^2 Score.
-6. Serializes and saves the trained model as 'model.pkl' using pickle.
-"""
 
 import os
 import pickle
