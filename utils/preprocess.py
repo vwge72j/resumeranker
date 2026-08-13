@@ -1,14 +1,4 @@
-"""
-Text Preprocessing Module for Resume Screening System.
 
-This module cleans raw text from Resumes and Job Descriptions by:
-1. Converting text to lowercase
-2. Removing punctuation and special characters
-3. Removing numbers
-4. Removing extra whitespace
-5. Removing standard English stopwords (e.g., 'the', 'is', 'at')
-6. Tokenizing and joining words back into a clean string
-"""
 
 import re
 import nltk
