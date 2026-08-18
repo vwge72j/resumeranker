@@ -32,7 +32,8 @@
         <div class="text-center mb-4">
             <h1 class="fw-bold text-dark">Smart Resume Analyzer</h1>
             <p class="text-muted">
-                Compare your Resume (.txt) against a Job Description (.txt) using TF-IDF & Random Forest Machine Learning.
+                Compare your Resume against a Job Description using TF-IDF & Random Forest Machine Learning. <br>
+                <strong>Supported formats: .txt, .pdf, .docx</strong>
             </p>
         </div>
 
@@ -59,19 +60,19 @@
                         <!-- Resume Upload Column -->
                         <div class="col-md-6">
                             <label for="resume" class="form-label fw-semibold">
-                                1. Upload Resume (.txt only) <span class="text-danger">*</span>
+                                1. Upload Resume <span class="text-danger">*</span>
                             </label>
                             <input class="form-control" type="file" id="resume" name="resume" accept=".txt, .pdf, .docx" required>
-                            <div class="form-text">Ensure your resume is saved as a plain text file.</div>
+                            <div class="form-text">Ensure your resume is a .txt, .pdf, or .docx file.</div>
                         </div>
 
                         <!-- Job Description Upload Column -->
                         <div class="col-md-6">
                             <label for="jd" class="form-label fw-semibold">
-                                2. Upload Job Description (.txt only) <span class="text-danger">*</span>
+                                2. Upload Job Description <span class="text-danger">*</span>
                             </label>
                             <input class="form-control" type="file" id="jd" name="jd" accept=".txt, .pdf, .docx" required>
-                            <div class="form-text">Paste the job posting into a .txt file and upload here.</div>
+                            <div class="form-text">Save the job posting as a .txt, .pdf, or .docx file and upload here.</div>
                         </div>
 
                     </div>
