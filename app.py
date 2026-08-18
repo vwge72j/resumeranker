@@ -1,8 +1,7 @@
-
-
 import os
+import PyPDF2
+import docx
 from flask import Flask, render_template, request
-from utils.helper import save_and_read_file
 from utils.preprocess import preprocess_text
 from utils.feature_extractor import extract_all_features
 from utils.predictor import predict_resume_score
@@ -10,7 +9,7 @@ from utils.predictor import predict_resume_score
 # Initialize Flask application
 app = Flask(__name__)
 
-# Configure a temporary directory to store uploaded files safely before reading
+# Configure a temporary directory (Keeping this just in case other parts of your app need it)
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -18,6 +17,35 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 # Set maximum allowed payload size to 5MB to prevent overly large file uploads
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 
+# --- NEW SMART TEXT EXTRACTOR ---
+def extract_text_from_file(uploaded_file):
+    """Extracts text from .txt, .pdf, or .docx files straight from memory."""
+    filename = uploaded_file.filename.lower()
+    
+    # 1. Handle PDF files
+    if filename.endswith('.pdf'):
+        pdf_reader = PyPDF2.PdfReader(uploaded_file)
+        text = ""
+        for page in pdf_reader.pages:
+            extracted = page.extract_text()
+            if extracted:
+                text += extracted + "\n"
+        return text
+
+    # 2. Handle Word documents (.docx)
+    elif filename.endswith('.docx'):
+        doc = docx.Document(uploaded_file)
+        text = ""
+        for para in doc.paragraphs:
+            text += para.text + "\n"
+        return text
+
+    # 3. Handle plain text (.txt)
+    elif filename.endswith('.txt'):
+        return uploaded_file.read().decode('utf-8', errors='ignore')
+        
+    else:
+        raise ValueError("Unsupported file format. Please upload .txt, .pdf, or .docx")
 
 @app.route("/", methods=["GET"])
 def index():
@@ -29,7 +57,6 @@ def index():
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
-   
     # Step 1: Check if both file input fields are present in the form request
     if "resume" not in request.files or "jd" not in request.files:
         return render_template(
@@ -46,20 +73,20 @@ def analyze():
         return render_template(
             "index.html",
             result=None,
-            error="One or both files were not selected. Please select .txt files for both.",
+            error="One or both files were not selected. Please select .txt, .pdf, or .docx files.",
         )
 
     try:
-        # Step 3: Safely save, read raw content, and clean up temporary files
-        raw_resume = save_and_read_file(resume_file, app.config["UPLOAD_FOLDER"])
-        raw_jd = save_and_read_file(jd_file, app.config["UPLOAD_FOLDER"])
+        # Step 3: Extract text based on file type
+        raw_resume = extract_text_from_file(resume_file)
+        raw_jd = extract_text_from_file(jd_file)
 
         # Check for empty files after reading
         if not raw_resume.strip() or not raw_jd.strip():
             return render_template(
                 "index.html",
                 result=None,
-                error="Uploaded files appear to be empty. Please check your .txt files.",
+                error="Uploaded files appear to be empty or unreadable.",
             )
 
         # Step 4: Text Preprocessing (lowercase, remove punctuation, remove stopwords)
@@ -90,7 +117,7 @@ def analyze():
         return render_template("index.html", result=result, error=None)
 
     except ValueError as val_err:
-        # Catch validation errors (e.g., uploading a .pdf or .docx instead of .txt)
+        # Catch validation errors 
         return render_template("index.html", result=None, error=str(val_err))
     except Exception as e:
         # Catch unexpected server or model errors gracefully
